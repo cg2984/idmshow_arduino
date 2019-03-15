@@ -12,7 +12,9 @@
 
 // How many NeoPixels are attached to the Arduino?
 #define NUMPIXELS      34
-
+const int buttonPin 8;
+int buttonState;
+int lightNum = 0; 
 // When we setup the NeoPixel library, we tell it how many pixels, and which pin to use to send signals.
 // Note that for older NeoPixel strips you might need to change the third parameter--see the strandtest
 // example for more information on possible values.
@@ -27,13 +29,16 @@ void setup() {
   if (F_CPU == 16000000) clock_prescale_set(clock_div_1);
 #endif
   // End of trinket special code
+  Serial.begin(9600);
+  pinMode(buttonPin, INPUT);
   strip.begin();
   strip.setBrightness(50);
   pixels.begin(); // This initializes the NeoPixel library.
 }
 
 void loop() {
-  CMYK_Pulse();
+  buttonChange();
+  Serial.print(lightNum);
 }
 
 void CMYK_SoftPulse(){
@@ -123,6 +128,18 @@ void CMYK_Cycle(){
     pixels.show(); // This sends the updated pixel color to the hardware.
 
     delay(delayval); // Delay for a period of time (in milliseconds).
+  }
+}
+
+void buttonChange(){
+  buttonState = digitalRead(buttonPin);
+  if (buttonState == HIGH){
+    if lightNum > 3{
+      lightNum = 0
+    }
+    else {
+      lightNum ++
+    }
   }
 }
 
